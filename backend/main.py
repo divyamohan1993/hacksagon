@@ -377,13 +377,78 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# CORS middleware (allow all origins for development)
+# ---------------------------------------------------------------------------
+# Enterprise Security Middleware
+# ---------------------------------------------------------------------------
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.requests import Request
+from starlette.responses import Response
+
+
+class SecurityHeadersMiddleware(BaseHTTPMiddleware):
+    """Add enterprise-grade security headers to every response."""
+
+    async def dispatch(self, request: Request, call_next):
+        response: Response = await call_next(request)
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        response.headers["X-Frame-Options"] = "DENY"
+        response.headers["X-XSS-Protection"] = "1; mode=block"
+        response.headers["Strict-Transport-Security"] = (
+            "max-age=31536000; includeSubDomains"
+        )
+        response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+        response.headers["Permissions-Policy"] = (
+            "camera=(), microphone=(), geolocation=()"
+        )
+        response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate"
+        response.headers["Pragma"] = "no-cache"
+        return response
+
+
+class APIKeyMiddleware(BaseHTTPMiddleware):
+    """Validate API secret key on protected endpoints when configured."""
+
+    async def dispatch(self, request: Request, call_next):
+        path = request.url.path
+        if (
+            path in ("/api/health", "/docs", "/openapi.json", "/redoc", "/ws")
+            or request.method == "OPTIONS"
+            or not settings.API_SECRET_KEY
+        ):
+            return await call_next(request)
+
+        api_key = request.headers.get("X-API-Key", "")
+        internal_token = request.headers.get("X-Internal-Token", "")
+
+        if api_key == settings.API_SECRET_KEY or internal_token == settings.INTERNAL_AUTH_TOKEN:
+            return await call_next(request)
+
+        if settings.SIMULATION_MODE:
+            return await call_next(request)
+
+        return Response(
+            content='{"detail": "Invalid or missing API key"}',
+            status_code=403,
+            media_type="application/json",
+        )
+
+
+# CORS
+allowed_origins = [
+    settings.FRONTEND_URL,
+    "http://localhost:40882",
+    "http://127.0.0.1:40882",
+]
+
+app.add_middleware(SecurityHeadersMiddleware)
+app.add_middleware(APIKeyMiddleware)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=allowed_origins,
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
+    expose_headers=["X-Request-ID"],
 )
 
 # Include routers
