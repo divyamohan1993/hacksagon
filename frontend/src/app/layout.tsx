@@ -22,6 +22,16 @@ export const metadata: Metadata = {
   authors: [{ name: 'Eco-Lens Team' }],
   themeColor: '#0a0e17',
   viewport: 'width=device-width, initial-scale=1',
+  icons: {
+    icon: '/favicon.ico',
+  },
+  openGraph: {
+    title: 'Eco-Lens: Virtual Air Quality Matrix',
+    description:
+      'Turn traffic cameras into pollution sensors using Computer Vision + Environmental Physics.',
+    images: [{ url: '/og-image.png', width: 1200, height: 630 }],
+    type: 'website',
+  },
 };
 
 export default function RootLayout({
