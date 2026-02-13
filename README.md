@@ -403,7 +403,7 @@ SOFTWARE.
 ---
 
 <p align="center">
-  Built with purpose at <strong>Hackathon 2024</strong>
+  Built with purpose at <strong>Hacksagon 2026</strong>
   <br/>
   <em>Because the air you breathe shouldn't be a mystery.</em>
 </p>
