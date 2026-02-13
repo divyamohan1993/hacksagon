@@ -1,0 +1,103 @@
+{
+  "metadata": {
+    "source": "EPA AP-42 Compilation of Air Emission Factors, Chapter 13",
+    "last_updated": "2024-01-15",
+    "units": "grams per vehicle per second (g/s)",
+    "notes": "Values derived from EPA mobile source emission factors for urban driving conditions"
+  },
+  "vehicle_classes": {
+    "heavy_duty_truck": {
+      "description": "Class 8 Heavy-Duty Diesel Trucks (GVWR > 33,000 lbs)",
+      "pm25": 0.070,
+      "pm10": 0.120,
+      "nox": 2.500,
+      "co": 1.800,
+      "co2": 85.0,
+      "voc": 0.150,
+      "so2": 0.012,
+      "reference_speed_kmh": 50,
+      "noise_ref_dba": 84,
+      "noise_ref_distance_m": 15
+    },
+    "passenger_car": {
+      "description": "Light-Duty Gasoline Vehicles (Sedans, SUVs, Pickups)",
+      "pm25": 0.005,
+      "pm10": 0.010,
+      "nox": 0.150,
+      "co": 1.200,
+      "co2": 12.0,
+      "voc": 0.080,
+      "so2": 0.002,
+      "reference_speed_kmh": 50,
+      "noise_ref_dba": 67,
+      "noise_ref_distance_m": 15
+    },
+    "transit_bus": {
+      "description": "Urban Transit Diesel Buses",
+      "pm25": 0.055,
+      "pm10": 0.095,
+      "nox": 2.100,
+      "co": 1.500,
+      "co2": 72.0,
+      "voc": 0.120,
+      "so2": 0.010,
+      "reference_speed_kmh": 40,
+      "noise_ref_dba": 81,
+      "noise_ref_distance_m": 15
+    },
+    "motorcycle": {
+      "description": "Motorcycles and Mopeds",
+      "pm25": 0.008,
+      "pm10": 0.015,
+      "nox": 0.100,
+      "co": 2.500,
+      "co2": 5.0,
+      "voc": 0.200,
+      "so2": 0.001,
+      "reference_speed_kmh": 50,
+      "noise_ref_dba": 78,
+      "noise_ref_distance_m": 15
+    }
+  },
+  "aqi_breakpoints": {
+    "pm25": {
+      "good": {"low": 0.0, "high": 12.0, "aqi_low": 0, "aqi_high": 50},
+      "moderate": {"low": 12.1, "high": 35.4, "aqi_low": 51, "aqi_high": 100},
+      "unhealthy_sensitive": {"low": 35.5, "high": 55.4, "aqi_low": 101, "aqi_high": 150},
+      "unhealthy": {"low": 55.5, "high": 150.4, "aqi_low": 151, "aqi_high": 200},
+      "very_unhealthy": {"low": 150.5, "high": 250.4, "aqi_low": 201, "aqi_high": 300},
+      "hazardous": {"low": 250.5, "high": 500.4, "aqi_low": 301, "aqi_high": 500}
+    }
+  },
+  "pasquill_gifford_classes": {
+    "A": {"description": "Very Unstable", "sigma_y_coeffs": [0.22, 0.0001], "sigma_z_coeffs": [0.20, 0.0]},
+    "B": {"description": "Unstable", "sigma_y_coeffs": [0.16, 0.0001], "sigma_z_coeffs": [0.12, 0.0]},
+    "C": {"description": "Slightly Unstable", "sigma_y_coeffs": [0.11, 0.0001], "sigma_z_coeffs": [0.08, 0.0002]},
+    "D": {"description": "Neutral", "sigma_y_coeffs": [0.08, 0.0001], "sigma_z_coeffs": [0.06, 0.0015]},
+    "E": {"description": "Slightly Stable", "sigma_y_coeffs": [0.06, 0.0001], "sigma_z_coeffs": [0.03, 0.0003]},
+    "F": {"description": "Stable", "sigma_y_coeffs": [0.04, 0.0001], "sigma_z_coeffs": [0.016, 0.0003]}
+  },
+  "who_guidelines": {
+    "pm25_annual": 5.0,
+    "pm25_24h": 15.0,
+    "pm10_annual": 15.0,
+    "pm10_24h": 45.0,
+    "no2_annual": 10.0,
+    "no2_1h": 25.0,
+    "noise_day_lden": 53.0,
+    "noise_night_lnight": 45.0
+  },
+  "health_dose_response": {
+    "pm25_cigarette_equivalent_ug_m3_24h": 22.0,
+    "pm25_mortality_rr_per_10ug": 1.06,
+    "pm25_respiratory_rr_per_10ug": 1.10,
+    "pm25_cardiovascular_rr_per_10ug": 1.08
+  },
+  "gaussian_plume_defaults": {
+    "receptor_height_m": 1.5,
+    "source_height_m": 0.3,
+    "road_width_m": 12.0,
+    "mixing_height_m": 1000.0,
+    "background_pm25_ug_m3": 8.0
+  }
+}
