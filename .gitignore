@@ -19,6 +19,7 @@ env/
 .env
 .env.local
 .env.production
+.env.backup.*
 
 # Node
 node_modules/
@@ -40,6 +41,7 @@ desktop.ini
 nul
 
 # Logs
+logs/
 *.log
 npm-debug.log*
 

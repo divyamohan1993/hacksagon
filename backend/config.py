@@ -38,9 +38,9 @@ class Settings(BaseSettings):
     SENSOR_UPDATE_INTERVAL: int = 5  # seconds between updates
     WEATHER_UPDATE_INTERVAL: int = 300  # 5 minutes
 
-    # Map bounds (NYC default)
-    MAP_CENTER_LAT: float = 40.7580
-    MAP_CENTER_LNG: float = -73.9855
+    # Map bounds (Delhi default)
+    MAP_CENTER_LAT: float = 28.6139
+    MAP_CENTER_LNG: float = 77.2090
 
     model_config = {"env_file": [".env", "../.env"], "env_file_encoding": "utf-8", "extra": "ignore"}
 

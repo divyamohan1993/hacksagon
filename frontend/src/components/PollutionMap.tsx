@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback, useEffect, useRef, useMemo } from 'react';
+import React, { useCallback, useEffect, useRef, useMemo, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { MapPin } from 'lucide-react';
 import type { SensorData, GridData } from '@/types';
@@ -29,6 +29,21 @@ function MapInnerComponent({ sensors, grid, selectedSensor, onSelectSensor }: Ma
     Tooltip: LeafletTooltip,
     useMap,
   } = require('react-leaflet');
+
+  // Patch Leaflet to clear stale _leaflet_id instead of throwing
+  // "Map container is already initialized" during React Strict Mode / HMR
+  const L = require('leaflet');
+  if (!L._strictModePatched) {
+    const origInit = L.Map.prototype._initContainer;
+    L.Map.prototype._initContainer = function (id: any) {
+      const container = typeof id === 'string' ? document.getElementById(id) : id;
+      if (container && container._leaflet_id) {
+        delete container._leaflet_id;
+      }
+      return origInit.call(this, id);
+    };
+    L._strictModePatched = true;
+  }
 
   function HeatmapOverlay({ grid }: { grid: GridData | null }) {
     const map = useMap();
@@ -117,101 +132,103 @@ function MapInnerComponent({ sensors, grid, selectedSensor, onSelectSensor }: Ma
   }
 
   return (
-    <MapContainer
-      center={MAP_CENTER}
-      zoom={MAP_ZOOM}
-      className="w-full h-full rounded-card"
-      style={{ background: '#111827' }}
-      zoomControl={true}
-    >
-      <TileLayer url={DARK_TILE_URL} attribution={DARK_TILE_ATTRIBUTION} />
-      <HeatmapOverlay grid={grid} />
-      {sensors.map((sensor) => {
-        const isSelected = selectedSensor === sensor.id;
-        const color = getAqiColor(sensor.pollution.aqi);
-        return (
-          <React.Fragment key={sensor.id}>
-            <CircleMarker
-              center={[sensor.lat, sensor.lng]}
-              radius={isSelected ? 12 : 8}
-              pathOptions={{
-                fillColor: color,
-                fillOpacity: isSelected ? 0.9 : 0.7,
-                color: isSelected ? '#ffffff' : color,
-                weight: isSelected ? 2 : 1,
-              }}
-              eventHandlers={{
-                click: () => {
-                  onSelectSensor(isSelected ? null : sensor.id);
-                },
-              }}
-            >
-              <LeafletTooltip
-                direction="top"
-                offset={[0, -10]}
-                className="custom-tooltip"
+    <div className="w-full h-full">
+      <MapContainer
+        center={MAP_CENTER}
+        zoom={MAP_ZOOM}
+        className="w-full h-full rounded-card"
+        style={{ background: '#111827' }}
+        zoomControl={true}
+      >
+        <TileLayer url={DARK_TILE_URL} attribution={DARK_TILE_ATTRIBUTION} />
+        <HeatmapOverlay grid={grid} />
+        {sensors.map((sensor) => {
+          const isSelected = selectedSensor === sensor.id;
+          const color = getAqiColor(sensor.pollution.aqi);
+          return (
+            <React.Fragment key={sensor.id}>
+              <CircleMarker
+                center={[sensor.lat, sensor.lng]}
+                radius={isSelected ? 12 : 8}
+                pathOptions={{
+                  fillColor: color,
+                  fillOpacity: isSelected ? 0.9 : 0.7,
+                  color: isSelected ? '#ffffff' : color,
+                  weight: isSelected ? 2 : 1,
+                }}
+                eventHandlers={{
+                  click: () => {
+                    onSelectSensor(isSelected ? null : sensor.id);
+                  },
+                }}
               >
-                <div className="text-xs">
-                  <p className="font-semibold">{sensor.name}</p>
-                  <p>AQI: {sensor.pollution.aqi}</p>
-                </div>
-              </LeafletTooltip>
-              <Popup>
-                <div className="min-w-[180px]">
-                  <h4 className="font-semibold text-sm mb-2">{sensor.name}</h4>
-                  <div className="space-y-1 text-xs">
-                    <div className="flex justify-between">
-                      <span className="text-[#8899a6]">AQI</span>
-                      <span className="font-medium" style={{ color }}>
-                        {sensor.pollution.aqi} ({sensor.pollution.category})
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-[#8899a6]">PM2.5</span>
-                      <span>{sensor.pollution.pm25.toFixed(1)} ug/m3</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-[#8899a6]">PM10</span>
-                      <span>{sensor.pollution.pm10.toFixed(1)} ug/m3</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-[#8899a6]">NO2</span>
-                      <span>{sensor.pollution.no2.toFixed(1)} ppb</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-[#8899a6]">Noise</span>
-                      <span>{sensor.noise.db_level.toFixed(1)} dB</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-[#8899a6]">Wind</span>
-                      <span>
-                        {sensor.weather.wind_speed.toFixed(1)} m/s @{' '}
-                        {Math.round(sensor.weather.wind_direction)}deg
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-[#8899a6]">Vehicles</span>
-                      <span>{sensor.vehicles.total}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-[#8899a6]">Status</span>
-                      <span
-                        className={
-                          sensor.status === 'active' ? 'text-[#00d68f]' : 'text-[#ef4444]'
-                        }
-                      >
-                        {sensor.status}
-                      </span>
+                <LeafletTooltip
+                  direction="top"
+                  offset={[0, -10]}
+                  className="custom-tooltip"
+                >
+                  <div className="text-xs">
+                    <p className="font-semibold">{sensor.name}</p>
+                    <p>AQI: {sensor.pollution.aqi}</p>
+                  </div>
+                </LeafletTooltip>
+                <Popup>
+                  <div className="min-w-[180px]">
+                    <h4 className="font-semibold text-sm mb-2">{sensor.name}</h4>
+                    <div className="space-y-1 text-xs">
+                      <div className="flex justify-between">
+                        <span className="text-[#8899a6]">AQI</span>
+                        <span className="font-medium" style={{ color }}>
+                          {sensor.pollution.aqi} ({sensor.pollution.category})
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-[#8899a6]">PM2.5</span>
+                        <span>{sensor.pollution.pm25.toFixed(1)} ug/m3</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-[#8899a6]">PM10</span>
+                        <span>{sensor.pollution.pm10.toFixed(1)} ug/m3</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-[#8899a6]">NO2</span>
+                        <span>{sensor.pollution.no2.toFixed(1)} ppb</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-[#8899a6]">Noise</span>
+                        <span>{sensor.noise.db_level.toFixed(1)} dB</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-[#8899a6]">Wind</span>
+                        <span>
+                          {sensor.weather.wind_speed.toFixed(1)} m/s @{' '}
+                          {Math.round(sensor.weather.wind_direction)}deg
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-[#8899a6]">Vehicles</span>
+                        <span>{sensor.vehicles.total}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-[#8899a6]">Status</span>
+                        <span
+                          className={
+                            sensor.status === 'active' ? 'text-[#00d68f]' : 'text-[#ef4444]'
+                          }
+                        >
+                          {sensor.status}
+                        </span>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </Popup>
-            </CircleMarker>
-            <WindArrow sensor={sensor} />
-          </React.Fragment>
-        );
-      })}
-    </MapContainer>
+                </Popup>
+              </CircleMarker>
+              <WindArrow sensor={sensor} />
+            </React.Fragment>
+          );
+        })}
+      </MapContainer>
+    </div>
   );
 }
 

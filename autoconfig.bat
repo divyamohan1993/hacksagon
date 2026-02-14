@@ -52,7 +52,7 @@ if errorlevel 1 (
 for /f "tokens=*" %%v in ('node --version') do set "NODE_VER=%%v"
 echo [INFO]  Node %NODE_VER%
 
-npm --version >nul 2>&1
+call npm --version >nul 2>&1
 if errorlevel 1 (
     echo [ERROR] npm not found.
     pause
@@ -174,8 +174,8 @@ for /f "tokens=*" %%k in ('python -c "import secrets; print(secrets.token_hex(32
     echo WEATHER_UPDATE_INTERVAL=300
     echo.
     echo # ---- Map ----
-    echo MAP_CENTER_LAT=40.7580
-    echo MAP_CENTER_LNG=-73.9855
+    echo MAP_CENTER_LAT=28.6139
+    echo MAP_CENTER_LNG=77.2090
     echo.
     echo # ---- Frontend ----
     echo NEXT_PUBLIC_API_URL=http://localhost:%BACKEND_PORT%
@@ -203,8 +203,14 @@ if not exist "venv" (
 )
 
 call venv\Scripts\activate.bat
-python -m pip install --upgrade pip setuptools wheel -q 2>nul
-pip install -r requirements.txt -q 2>nul
+python -m pip install --upgrade pip setuptools wheel -q
+pip install -r requirements.txt -q
+if errorlevel 1 (
+    echo [ERROR] pip install failed! Check requirements.txt and Python version.
+    call deactivate
+    pause
+    exit /b 1
+)
 call deactivate
 
 echo [INFO]  Backend dependencies installed/updated

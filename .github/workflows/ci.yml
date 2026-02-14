@@ -7,8 +7,8 @@ on:
     branches: [main]
 
 jobs:
-  backend-lint:
-    name: Backend Lint & Validation
+  backend-test:
+    name: Backend Tests
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -23,25 +23,24 @@ jobs:
           cache: "pip"
 
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: |
+          pip install -r requirements.txt
+          pip install pytest pytest-asyncio httpx
 
       - name: Validate Python syntax
-        run: python -m py_compile main.py config.py models.py database.py
-
-      - name: Validate services
         run: |
-          for f in services/*.py; do
-            python -m py_compile "$f"
-          done
+          python -m py_compile main.py config.py models.py database.py
+          for f in services/*.py; do python -m py_compile "$f"; done
+          for f in api/*.py; do python -m py_compile "$f"; done
 
-      - name: Validate API modules
-        run: |
-          for f in api/*.py; do
-            python -m py_compile "$f"
-          done
+      - name: Run tests
+        run: pytest tests/ -v --tb=short
+        env:
+          SIMULATION_MODE: "true"
+          DATABASE_URL: "sqlite:///./test.db"
 
-  frontend-build:
-    name: Frontend Build
+  frontend-test:
+    name: Frontend Build & Tests
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -54,21 +53,49 @@ jobs:
         with:
           node-version: "20"
           cache: "npm"
-          cache-dependency-path: frontend/package.json
+          cache-dependency-path: frontend/package-lock.json
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
 
       - name: Build
         run: npm run build
         env:
-          NEXT_PUBLIC_API_URL: http://localhost:8000
-          NEXT_PUBLIC_WS_URL: ws://localhost:8000/ws
+          NEXT_PUBLIC_API_URL: http://localhost:40881
+          NEXT_PUBLIC_WS_URL: ws://localhost:40881/ws
+
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check for secrets in code
+        run: |
+          # Fail if any .env files (except .env.example) are tracked
+          if git ls-files | grep -E '^\\.env$|^\\.env\\.local$|^\\.env\\.production$'; then
+            echo "ERROR: .env file is tracked by git!"
+            exit 1
+          fi
+          echo "No secret files tracked - OK"
+
+      - name: Check for hardcoded API keys
+        run: |
+          # Search for common secret patterns (skip .env.example and binary files)
+          if grep -rn --include="*.py" --include="*.ts" --include="*.tsx" --include="*.js" \
+            -E '(sk-[a-zA-Z0-9]{20,}|AKIA[0-9A-Z]{16}|ghp_[a-zA-Z0-9]{36})' .; then
+            echo "ERROR: Possible hardcoded secrets found!"
+            exit 1
+          fi
+          echo "No hardcoded secrets detected - OK"
 
   docker-build:
-    name: Docker Build Verification
+    name: Docker Build
     runs-on: ubuntu-latest
-    needs: [backend-lint, frontend-build]
+    needs: [backend-test, frontend-test]
     steps:
       - uses: actions/checkout@v4
 

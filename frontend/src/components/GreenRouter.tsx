@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useRef, useEffect, type RefObject } from 'react';
 import dynamic from 'next/dynamic';
 import { Navigation, MapPin, Leaf, ArrowRight } from 'lucide-react';
 import clsx from 'clsx';
@@ -27,6 +27,20 @@ function RouteMapInnerComponent({ greenRoute, startCoords, endCoords }: RouteMap
     useMap,
   } = require('react-leaflet');
   const L = require('leaflet');
+
+  // Patch Leaflet to clear stale _leaflet_id instead of throwing
+  // "Map container is already initialized" during React Strict Mode / HMR
+  if (!L._strictModePatched) {
+    const origInit = L.Map.prototype._initContainer;
+    L.Map.prototype._initContainer = function (id: any) {
+      const container = typeof id === 'string' ? document.getElementById(id) : id;
+      if (container && container._leaflet_id) {
+        delete container._leaflet_id;
+      }
+      return origInit.call(this, id);
+    };
+    L._strictModePatched = true;
+  }
 
   const startIcon = L.divIcon({
     className: 'custom-marker',
@@ -69,38 +83,40 @@ function RouteMapInnerComponent({ greenRoute, startCoords, endCoords }: RouteMap
   }, [greenRoute]);
 
   return (
-    <MapContainer
-      center={center}
-      zoom={13}
-      className="w-full h-full rounded-lg"
-      style={{ background: '#111827' }}
-      zoomControl={false}
-    >
-      <TileLayer url={DARK_TILE_URL} attribution={DARK_TILE_ATTRIBUTION} />
-      {startCoords && <Marker position={startCoords} icon={startIcon} />}
-      {endCoords && <Marker position={endCoords} icon={endIcon} />}
-      {shortestPath.length > 1 && (
-        <Polyline
-          positions={shortestPath}
-          pathOptions={{
-            color: '#ef4444',
-            weight: 3,
-            dashArray: '8 6',
-            opacity: 0.7,
-          }}
-        />
-      )}
-      {greenPath.length > 1 && (
-        <Polyline
-          positions={greenPath}
-          pathOptions={{
-            color: '#00d68f',
-            weight: 4,
-            opacity: 0.9,
-          }}
-        />
-      )}
-    </MapContainer>
+    <div className="w-full h-full">
+      <MapContainer
+        center={center}
+        zoom={13}
+        className="w-full h-full rounded-lg"
+        style={{ background: '#111827' }}
+        zoomControl={false}
+      >
+        <TileLayer url={DARK_TILE_URL} attribution={DARK_TILE_ATTRIBUTION} />
+        {startCoords && <Marker position={startCoords} icon={startIcon} />}
+        {endCoords && <Marker position={endCoords} icon={endIcon} />}
+        {shortestPath.length > 1 && (
+          <Polyline
+            positions={shortestPath}
+            pathOptions={{
+              color: '#ef4444',
+              weight: 3,
+              dashArray: '8 6',
+              opacity: 0.7,
+            }}
+          />
+        )}
+        {greenPath.length > 1 && (
+          <Polyline
+            positions={greenPath}
+            pathOptions={{
+              color: '#00d68f',
+              weight: 4,
+              opacity: 0.9,
+            }}
+          />
+        )}
+      </MapContainer>
+    </div>
   );
 }
 

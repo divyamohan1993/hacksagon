@@ -7,10 +7,15 @@ import type {
   HealthImpactData,
 } from '@/types';
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || '/api';
+// Use relative paths through Next.js proxy rewrites by default.
+// When NEXT_PUBLIC_API_URL is set (e.g. http://localhost:40881),
+// requests go directly to the backend.
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || '';
 
 async function fetchJSON<T>(endpoint: string): Promise<T> {
-  const res = await fetch(`${API_BASE}${endpoint}`);
+  const res = await fetch(`${API_BASE}${endpoint}`, {
+    headers: { 'Accept': 'application/json' },
+  });
   if (!res.ok) {
     throw new Error(`API error: ${res.status} ${res.statusText}`);
   }
@@ -18,12 +23,12 @@ async function fetchJSON<T>(endpoint: string): Promise<T> {
 }
 
 export async function fetchSensors(): Promise<SensorData[]> {
-  return fetchJSON<SensorData[]>('/sensors');
+  return fetchJSON<SensorData[]>('/api/sensors');
 }
 
 export async function fetchForecast(sensorId?: string): Promise<ForecastPoint[]> {
-  const query = sensorId ? `?sensor_id=${sensorId}` : '';
-  return fetchJSON<ForecastPoint[]>(`/forecast${query}`);
+  const id = sensorId || 'cam-001';
+  return fetchJSON<ForecastPoint[]>(`/api/forecast/${id}`);
 }
 
 export async function fetchGreenRoute(
@@ -33,16 +38,16 @@ export async function fetchGreenRoute(
   endLng: number
 ): Promise<GreenRoute> {
   return fetchJSON<GreenRoute>(
-    `/green-route?start_lat=${startLat}&start_lng=${startLng}&end_lat=${endLat}&end_lng=${endLng}`
+    `/api/routing/green-path?from_lat=${startLat}&from_lng=${startLng}&to_lat=${endLat}&to_lng=${endLng}`
   );
 }
 
 export async function fetchGrid(): Promise<GridData> {
-  return fetchJSON<GridData>('/grid');
+  return fetchJSON<GridData>('/api/grid');
 }
 
 export async function fetchStats(): Promise<GlobalStats> {
-  return fetchJSON<GlobalStats>('/stats');
+  return fetchJSON<GlobalStats>('/api/stats');
 }
 
 export async function fetchSensorHistory(
@@ -50,10 +55,10 @@ export async function fetchSensorHistory(
   hours?: number
 ): Promise<{ timestamp: string; pm25: number; aqi: number }[]> {
   const query = hours ? `?hours=${hours}` : '';
-  return fetchJSON(`/sensors/${sensorId}/history${query}`);
+  return fetchJSON(`/api/sensors/${sensorId}/history${query}`);
 }
 
 export async function fetchHealthImpact(sensorId?: string): Promise<HealthImpactData> {
   const query = sensorId ? `?sensor_id=${sensorId}` : '';
-  return fetchJSON<HealthImpactData>(`/health-impact${query}`);
+  return fetchJSON<HealthImpactData>(`/api/health-impact${query}`);
 }

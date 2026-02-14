@@ -1,4 +1,4 @@
-export const MAP_CENTER: [number, number] = [40.758, -73.9855];
+export const MAP_CENTER: [number, number] = [28.6139, 77.2090];
 export const MAP_ZOOM = 12;
 
 export const DARK_TILE_URL =
@@ -58,12 +58,12 @@ export function getNoiseCategory(db: number): string {
 }
 
 export const PRESET_LOCATIONS: { name: string; lat: number; lng: number }[] = [
-  { name: 'Times Square', lat: 40.758, lng: -73.9855 },
-  { name: 'Brooklyn Bridge', lat: 40.7061, lng: -73.9969 },
-  { name: 'Central Park', lat: 40.7829, lng: -73.9654 },
-  { name: 'Wall Street', lat: 40.7074, lng: -74.0113 },
-  { name: 'Harlem', lat: 40.8116, lng: -73.9465 },
-  { name: 'Queens', lat: 40.7282, lng: -73.7949 },
+  { name: 'India Gate', lat: 28.6129, lng: 77.2295 },
+  { name: 'Connaught Place', lat: 28.6315, lng: 77.2167 },
+  { name: 'ITO Junction', lat: 28.6280, lng: 77.2413 },
+  { name: 'Anand Vihar', lat: 28.6469, lng: 77.3164 },
+  { name: 'Dwarka Sec-8', lat: 28.5733, lng: 77.0659 },
+  { name: 'Chandni Chowk', lat: 28.6506, lng: 77.2302 },
 ];
 
 export const PM25_THRESHOLDS = [

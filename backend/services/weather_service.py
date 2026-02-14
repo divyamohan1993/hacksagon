@@ -31,22 +31,22 @@ from models import WeatherData
 logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
-# Default NYC monthly temperature ranges (approximate, Celsius)
-# Source: NOAA climate normals for Central Park, NY
+# Default Delhi monthly temperature ranges (approximate, Celsius)
+# Source: IMD (India Meteorological Department) climate normals for Delhi
 # ---------------------------------------------------------------------------
 _MONTHLY_TEMP_RANGES: Dict[int, tuple] = {
-    1:  (-3.0,   4.0),
-    2:  (-2.0,   5.0),
-    3:  ( 2.0,  11.0),
-    4:  ( 7.0,  18.0),
-    5:  (12.0,  23.0),
-    6:  (18.0,  28.0),
-    7:  (21.0,  31.0),
-    8:  (20.0,  30.0),
-    9:  (16.0,  26.0),
-    10: (10.0,  19.0),
-    11: ( 4.0,  12.0),
-    12: (-1.0,   6.0),
+    1:  ( 4.0,  20.0),
+    2:  ( 7.0,  23.0),
+    3:  (12.0,  30.0),
+    4:  (18.0,  37.0),
+    5:  (23.0,  41.0),
+    6:  (26.0,  40.0),
+    7:  (26.0,  36.0),
+    8:  (25.0,  34.0),
+    9:  (23.0,  35.0),
+    10: (16.0,  33.0),
+    11: (10.0,  28.0),
+    12: ( 5.0,  22.0),
 }
 
 

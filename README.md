@@ -10,8 +10,8 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/python-3.11+-blue?style=for-the-badge&logo=python&logoColor=white" alt="Python 3.11+"/>
-  <img src="https://img.shields.io/badge/Next.js-14-black?style=for-the-badge&logo=next.js&logoColor=white" alt="Next.js 14"/>
-  <img src="https://img.shields.io/badge/FastAPI-0.110-009688?style=for-the-badge&logo=fastapi&logoColor=white" alt="FastAPI"/>
+  <img src="https://img.shields.io/badge/Next.js-16-black?style=for-the-badge&logo=next.js&logoColor=white" alt="Next.js 16"/>
+  <img src="https://img.shields.io/badge/FastAPI-0.115-009688?style=for-the-badge&logo=fastapi&logoColor=white" alt="FastAPI"/>
   <img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" alt="MIT License"/>
   <img src="https://img.shields.io/badge/EPA-AP--42-orange?style=for-the-badge" alt="EPA AP-42"/>
   <img src="https://img.shields.io/badge/Docker-Ready-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Docker Ready"/>
@@ -19,8 +19,7 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/status-hackathon--ready-brightgreen?style=flat-square" alt="Status"/>
-  <img src="https://img.shields.io/badge/build-passing-brightgreen?style=flat-square" alt="Build"/>
-  <img src="https://img.shields.io/badge/coverage-92%25-brightgreen?style=flat-square" alt="Coverage"/>
+  <a href="https://github.com/divyamohan1993/hacksagon/actions"><img src="https://img.shields.io/github/actions/workflow/status/divyamohan1993/hacksagon/ci.yml?style=flat-square&label=CI" alt="CI"/></a>
 </p>
 
 ---
@@ -150,8 +149,8 @@ Standard navigation apps optimize for time or distance. ECO-LENS offers **Green 
 
 | Layer | Technology | Purpose |
 |-------|-----------|---------|
-| **Frontend** | Next.js 14 + React 18 | Server-side rendering, app router |
-| **Visualization** | Deck.gl + Mapbox GL | GPU-accelerated map layers |
+| **Frontend** | Next.js 16 + React 18 | Server-side rendering, app router |
+| **Visualization** | Leaflet + React-Leaflet | Interactive map with heatmap overlays |
 | **Backend** | FastAPI + Python 3.11 | Async API with auto-generated docs |
 | **Real-time** | WebSockets | Sub-second data streaming |
 | **Computer Vision** | YOLOv8 (Ultralytics) | Vehicle detection & classification |
@@ -175,24 +174,24 @@ Standard navigation apps optimize for time or distance. ECO-LENS offers **Green 
 
 **Linux / macOS:**
 ```bash
-git clone https://github.com/your-team/eco-lens.git
-cd eco-lens
-chmod +x setup.sh
-./setup.sh
+git clone https://github.com/divyamohan1993/hacksagon.git
+cd hacksagon
+chmod +x autoconfig.sh
+./autoconfig.sh
 ```
 
 **Windows:**
 ```cmd
-git clone https://github.com/your-team/eco-lens.git
-cd eco-lens
-setup.bat
+git clone https://github.com/divyamohan1993/hacksagon.git
+cd hacksagon
+autoconfig.bat
 ```
 
 ### Option 2: Docker (Recommended for Demo)
 
 ```bash
-git clone https://github.com/your-team/eco-lens.git
-cd eco-lens
+git clone https://github.com/divyamohan1993/hacksagon.git
+cd hacksagon
 cp .env.example .env
 # Edit .env with your OpenWeatherMap API key
 docker compose up --build
@@ -202,8 +201,8 @@ docker compose up --build
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/your-team/eco-lens.git
-cd eco-lens
+git clone https://github.com/divyamohan1993/hacksagon.git
+cd hacksagon
 
 # 2. Configure environment
 cp .env.example .env
@@ -217,7 +216,7 @@ source venv/bin/activate        # Linux/Mac
 pip install -r requirements.txt
 
 # 4. Start the backend
-python -m uvicorn main:app --reload --port 8000
+python -m uvicorn main:app --reload --port 40881
 
 # 5. Frontend setup (new terminal)
 cd frontend
@@ -229,10 +228,10 @@ npm run dev
 
 | Service | URL |
 |---------|-----|
-| Dashboard | [http://localhost:3000](http://localhost:3000) |
-| API Documentation | [http://localhost:8000/docs](http://localhost:8000/docs) |
-| WebSocket Feed | [ws://localhost:8000/ws](ws://localhost:8000/ws) |
-| Health Check | [http://localhost:8000/api/health](http://localhost:8000/api/health) |
+| Dashboard | [http://localhost:40882](http://localhost:40882) |
+| API Documentation | [http://localhost:40881/docs](http://localhost:40881/docs) |
+| WebSocket Feed | [ws://localhost:40881/ws](ws://localhost:40881/ws) |
+| Health Check | [http://localhost:40881/api/health](http://localhost:40881/api/health) |
 
 ---
 
@@ -243,45 +242,45 @@ npm run dev
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | `GET` | `/api/health` | Service health check |
-| `GET` | `/api/aqi/current` | Current AQI for all monitored intersections |
-| `GET` | `/api/aqi/history?hours=24` | Historical AQI readings |
-| `GET` | `/api/emissions/current` | Real-time emission rates by pollutant |
-| `GET` | `/api/traffic/counts` | Current vehicle counts by class |
-| `GET` | `/api/weather/current` | Latest weather conditions |
-| `GET` | `/api/sensors/mesh` | Kriging-interpolated virtual sensor grid |
-| `GET` | `/api/plume/field` | Gaussian plume concentration field |
-| `GET` | `/api/noise/current` | Current noise level estimates |
-| `GET` | `/api/health-impact/dose` | Cumulative exposure dose & cigarette equivalents |
-| `POST` | `/api/routing/green-corridor` | Compute pollution-minimized route |
-| `GET` | `/api/intersections` | List of monitored intersections |
+| `GET` | `/api/sensors` | All sensors with current readings |
+| `GET` | `/api/sensors/{id}` | Single sensor data |
+| `GET` | `/api/sensors/{id}/history?hours=24` | Historical readings (1-168 hours) |
+| `GET` | `/api/forecast/{sensor_id}` | 6-hour PM2.5 forecast (Holt-Winters) |
+| `GET` | `/api/grid` | Kriging-interpolated pollution grid |
+| `GET` | `/api/stats` | Global statistics across all sensors |
+| `GET` | `/api/health-impact` | Health impact summary with cigarette equivalents |
+| `GET` | `/api/routing/green-path` | Pollution-minimized route (`from_lat`, `from_lng`, `to_lat`, `to_lng`) |
 
 ### WebSocket
 
 | Endpoint | Description |
 |----------|-------------|
-| `ws://localhost:8000/ws` | Real-time data stream (5s interval) |
+| `ws://localhost:40881/ws` | Real-time sensor data stream (5s interval) |
 
 **WebSocket message format:**
 
 ```json
 {
-  "type": "update",
-  "timestamp": "2024-01-15T12:30:00Z",
-  "data": {
-    "aqi": 72,
-    "pm25": 21.5,
-    "traffic_counts": {
-      "passenger_car": 23,
-      "heavy_duty_truck": 2,
-      "transit_bus": 1,
-      "motorcycle": 3
-    },
-    "noise_dba": 68.4,
-    "cigarette_equivalent_hourly": 0.041,
-    "wind_speed_ms": 3.2,
-    "wind_direction_deg": 225,
-    "plume_particles": [...]
-  }
+  "type": "sensor_update",
+  "timestamp": "2026-02-14T15:30:00Z",
+  "sensors": [
+    {
+      "id": "cam-001",
+      "name": "India Gate",
+      "lat": 28.6129,
+      "lng": 77.2295,
+      "status": "active",
+      "vehicles": { "trucks": 5, "cars": 40, "buses": 8, "motorcycles": 15, "total": 68 },
+      "pollution": { "pm25": 45.2, "pm10": 68.3, "no2": 12.1, "co": 0.8, "aqi": 124, "category": "Unhealthy (Sensitive)" },
+      "weather": { "wind_speed": 3.6, "wind_direction": 280, "temperature": 25.1, "humidity": 33 },
+      "noise": { "db_level": 72.4, "category": "Loud" },
+      "health": { "score": 65, "risk_level": "Moderate", "equivalent_cigarettes": 0.08, "vulnerable_advisory": "..." }
+    }
+  ],
+  "grid": { "bounds": {}, "resolution": 50, "values": [[]] },
+  "stats": { "active_sensors": 6, "avg_aqi": 130, "avg_pm25": 48.5 },
+  "particles": [],
+  "forecast": []
 }
 ```
 
@@ -339,34 +338,34 @@ The cigarette equivalence metric is based on research from **Berkeley Earth** (R
 ## Project Structure
 
 ```
-eco-lens/
+hacksagon/
 ├── backend/
-│   ├── data/
-│   │   └── epa_emission_factors.json   # EPA AP-42 emission factors
-│   ├── engines/
-│   │   ├── emission_calculator.py      # Vehicle emission computation
-│   │   ├── gaussian_plume.py           # Atmospheric dispersion model
-│   │   ├── kriging_interpolator.py     # Spatial interpolation
-│   │   ├── health_impact.py            # Dose-response calculations
-│   │   ├── noise_estimator.py          # FHWA TNM noise model
-│   │   └── green_router.py             # Pollution-weighted A* routing
-│   ├── services/
-│   │   ├── traffic_simulator.py        # Demo mode traffic generation
-│   │   ├── weather_service.py          # OpenWeatherMap integration
-│   │   └── camera_service.py           # YOLO vehicle detection
+│   ├── api/                            # REST + WebSocket handlers
+│   ├── services/                       # 8 scientific engine modules
+│   ├── tests/                          # pytest test suite
+│   ├── data/                           # EPA AP-42 emission factors
 │   ├── main.py                         # FastAPI application entry
+│   ├── models.py                       # Pydantic data models
+│   ├── config.py                       # Settings management
+│   ├── database.py                     # Async SQLAlchemy layer
 │   ├── requirements.txt                # Python dependencies
 │   └── Dockerfile                      # Backend container
 ├── frontend/
-│   ├── app/                            # Next.js app router
-│   ├── components/                     # React components
-│   ├── public/                         # Static assets
+│   ├── src/
+│   │   ├── app/                        # Next.js app router
+│   │   ├── components/                 # 11 React dashboard components
+│   │   ├── hooks/                      # WebSocket hook
+│   │   ├── lib/                        # API client & constants
+│   │   └── types/                      # TypeScript interfaces
 │   ├── package.json                    # Node dependencies
-│   └── Dockerfile                      # Frontend container
+│   └── Dockerfile                      # Frontend container (multi-stage)
+├── docs/                               # Documentation & presentation
+├── .github/                            # CI/CD, issue & PR templates
 ├── docker-compose.yml                  # Multi-service orchestration
-├── .env.example                        # Environment template
-├── setup.sh                            # Linux/Mac setup script
-├── setup.bat                           # Windows setup script
+├── .env.example                        # Environment template (no secrets)
+├── SECURITY.md                         # Security policy
+├── autoconfig.sh                       # Linux/Mac setup with key rotation
+├── autoconfig.bat                      # Windows setup with key rotation
 └── README.md                           # This file
 ```
 
@@ -379,7 +378,7 @@ This project is licensed under the **MIT License**.
 ```
 MIT License
 
-Copyright (c) 2024 ECO-LENS Team
+Copyright (c) 2025-2026 ECO-LENS Team
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

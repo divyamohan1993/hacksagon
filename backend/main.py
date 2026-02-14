@@ -4,7 +4,7 @@ Eco-Lens Backend - FastAPI Application Entry Point
 Virtual Air Quality Matrix that turns traffic cameras into virtual pollution sensors.
 Uses Gaussian plume dispersion physics, time-of-day traffic modeling, and real
 weather data to generate realistic air quality readings for 6 virtual cameras
-placed across NYC.
+placed across Delhi, India.
 """
 
 import asyncio
@@ -60,15 +60,15 @@ logging.basicConfig(
 logger = logging.getLogger("ecolens")
 
 # ---------------------------------------------------------------------------
-# Virtual camera definitions (NYC locations)
+# Virtual camera definitions (Delhi, India)
 # ---------------------------------------------------------------------------
 CAMERAS = [
-    {"id": "cam-001", "name": "Times Square",       "lat": 40.7580, "lng": -73.9855},
-    {"id": "cam-002", "name": "Brooklyn Bridge",    "lat": 40.7061, "lng": -73.9969},
-    {"id": "cam-003", "name": "Central Park South", "lat": 40.7648, "lng": -73.9724},
-    {"id": "cam-004", "name": "Wall Street",        "lat": 40.7074, "lng": -74.0113},
-    {"id": "cam-005", "name": "Harlem",             "lat": 40.8116, "lng": -73.9465},
-    {"id": "cam-006", "name": "Queens Blvd",        "lat": 40.7282, "lng": -73.7949},
+    {"id": "cam-001", "name": "India Gate",         "lat": 28.6129, "lng": 77.2295},
+    {"id": "cam-002", "name": "Connaught Place",    "lat": 28.6315, "lng": 77.2167},
+    {"id": "cam-003", "name": "ITO Junction",       "lat": 28.6280, "lng": 77.2413},
+    {"id": "cam-004", "name": "Anand Vihar",        "lat": 28.6469, "lng": 77.3164},
+    {"id": "cam-005", "name": "Dwarka Sec-8",       "lat": 28.5733, "lng": 77.0659},
+    {"id": "cam-006", "name": "Chandni Chowk",      "lat": 28.6506, "lng": 77.2302},
 ]
 
 # ---------------------------------------------------------------------------

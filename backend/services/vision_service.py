@@ -25,56 +25,56 @@ logger = logging.getLogger(__name__)
 
 
 # ---------------------------------------------------------------------------
-# Location-specific traffic profiles (multiplier relative to average NYC)
+# Location-specific traffic profiles (Delhi, India)
 # ---------------------------------------------------------------------------
 _LOCATION_PROFILES: Dict[str, Dict[str, float]] = {
-    "cam-001": {  # Times Square - high commercial traffic
-        "car_base": 35,
-        "truck_base": 8,
-        "bus_base": 6,
-        "moto_base": 4,
-        "rush_multiplier": 1.5,
-        "weekend_factor": 1.2,  # tourists keep it busy
-    },
-    "cam-002": {  # Brooklyn Bridge - commuter corridor
-        "car_base": 45,
+    "cam-001": {  # India Gate - tourist & govt traffic
+        "car_base": 40,
         "truck_base": 5,
-        "bus_base": 3,
-        "moto_base": 3,
-        "rush_multiplier": 2.0,
+        "bus_base": 8,
+        "moto_base": 15,
+        "rush_multiplier": 1.5,
+        "weekend_factor": 1.3,
+    },
+    "cam-002": {  # Connaught Place - commercial hub
+        "car_base": 45,
+        "truck_base": 6,
+        "bus_base": 7,
+        "moto_base": 12,
+        "rush_multiplier": 1.8,
+        "weekend_factor": 0.9,
+    },
+    "cam-003": {  # ITO Junction - major intersection
+        "car_base": 50,
+        "truck_base": 10,
+        "bus_base": 10,
+        "moto_base": 18,
+        "rush_multiplier": 2.2,
         "weekend_factor": 0.6,
     },
-    "cam-003": {  # Central Park South - moderate traffic
-        "car_base": 25,
-        "truck_base": 3,
-        "bus_base": 4,
-        "moto_base": 2,
-        "rush_multiplier": 1.3,
-        "weekend_factor": 1.1,
-    },
-    "cam-004": {  # Wall Street - business district
-        "car_base": 30,
-        "truck_base": 6,
-        "bus_base": 4,
-        "moto_base": 2,
-        "rush_multiplier": 1.8,
-        "weekend_factor": 0.3,
-    },
-    "cam-005": {  # Harlem - residential/commercial mix
-        "car_base": 28,
-        "truck_base": 5,
-        "bus_base": 5,
-        "moto_base": 3,
-        "rush_multiplier": 1.4,
-        "weekend_factor": 0.8,
-    },
-    "cam-006": {  # Queens Blvd - suburban arterial
-        "car_base": 40,
-        "truck_base": 10,
-        "bus_base": 3,
-        "moto_base": 5,
+    "cam-004": {  # Anand Vihar - industrial/transport hub
+        "car_base": 35,
+        "truck_base": 15,
+        "bus_base": 12,
+        "moto_base": 10,
         "rush_multiplier": 1.9,
+        "weekend_factor": 0.5,
+    },
+    "cam-005": {  # Dwarka Sec-8 - suburban residential
+        "car_base": 30,
+        "truck_base": 4,
+        "bus_base": 5,
+        "moto_base": 8,
+        "rush_multiplier": 1.6,
         "weekend_factor": 0.7,
+    },
+    "cam-006": {  # Chandni Chowk - old Delhi congestion
+        "car_base": 20,
+        "truck_base": 8,
+        "bus_base": 6,
+        "moto_base": 25,
+        "rush_multiplier": 1.4,
+        "weekend_factor": 1.1,
     },
 }
 
